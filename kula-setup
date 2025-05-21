@@ -1,0 +1,47 @@
+#!/bin/bash
+
+usage() {
+    echo "Usage: $0 <xsa_file_path>"
+    exit 1
+}
+
+if [ $# -eq 0 ]; then
+    echo "Error: No file specified."
+    usage
+fi
+
+if [ ! -f "$1" ]; then
+    echo "error: file '$1' does not exist."
+    usage
+fi
+
+# Add xsct to path (this is just a ease-of-use hack for prototyping)
+export PATH=$PATH:"~/Xilinx/Vitis/2024.2/bin"
+
+# Generate system device tree from .xsa file
+mkdir -p ./build/sdt
+echo "Generating system device tree from: $1 ..."
+if ! xsct ./scripts/sdt.tcl $1 ./build/sdt; then
+    echo "error: generating system device tree failed"
+    echo "make sure the 'xsct' tool is in your PATH"
+fi
+
+# Start bitbake environment
+echo "Starting bitbake environment ..."
+export TEMPLATECONF=`pwd`/meta-ni-kula/conf/templates/default
+source ./openembedded-core/oe-init-build-env ./build ./bitbake
+
+# Give the bitbake sever a chance to start
+sleep 3
+
+# Generate machine configuration from system device tree
+../gen-machine-conf/gen-machineconf parse-sdt --hw-description ./sdt -c ./conf -l ./conf/local.conf --machine-name versal-vck190-sdt-kula
+
+# Print some help
+echo "Build images with:"
+echo -e "\tbitbake core-image-minimal"
+echo -e "\tbitbake core-image-full-cmdline"
+echo
+echo "Run resulting images in qemu with:"
+echo -e '\tMACHINE="versal-vck190-sdt-kula" runqemu core-image-minimal'
+echo -e '\tMACHINE="versal-vck190-sdt-kula" runqemu core-image-full-cmdline'
