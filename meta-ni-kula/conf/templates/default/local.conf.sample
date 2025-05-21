@@ -105,6 +105,11 @@ PACKAGE_CLASSES ?= "package_ipk"
 # Supported values are i686, x86_64, aarch64
 #SDKMACHINE ?= "i686"
 
+# Use systemd for system initialization and journald for logging
+INIT_MANAGER = "systemd"
+VIRTUAL-RUNTIME_syslog = ""
+VIRTUAL-RUNTIME_base-utils-syslog = ""
+
 #
 # Extra image configuration defaults
 #
