@@ -1,3 +1,5 @@
-This README file contains information on the contents of the meta-xilinx-minimal layer.
-This layer exists to hold template files for xilinx-minimal builds.
+This README file contains information on the contents of the meta-ni-kula layer.
+This layer exists to hold template files for Kula prototype builds.
 
+Based on: https://github.com/balister/xilinx-minimal/tree/scarthgap/meta-xilinx-minimal
+Part of: https://github.com/balister/xilinx-minimal
