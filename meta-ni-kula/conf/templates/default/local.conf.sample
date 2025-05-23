@@ -110,6 +110,9 @@ INIT_MANAGER = "systemd"
 VIRTUAL-RUNTIME_syslog = ""
 VIRTUAL-RUNTIME_base-utils-syslog = ""
 
+# Enable CVE checks
+INHERIT += "cve-check"
+
 #
 # Extra image configuration defaults
 #
