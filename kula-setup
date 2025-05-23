@@ -19,11 +19,13 @@ fi
 export PATH=$PATH:"~/Xilinx/Vitis/2024.2/bin"
 
 # Generate system device tree from .xsa file
-mkdir -p ./build/sdt
-echo "Generating system device tree from: $1 ..."
-if ! xsct ./scripts/sdt.tcl $1 ./build/sdt; then
-    echo "error: generating system device tree failed"
-    echo "make sure the 'xsct' tool is in your PATH"
+if [ ! -d ./build/sdt ]; then
+    mkdir -p ./build/sdt
+    echo "Generating system device tree from: $1 ..."
+    if ! xsct ./scripts/sdt.tcl $1 ./build/sdt; then
+	echo "error: generating system device tree failed"
+	echo "make sure the 'xsct' tool is in your PATH"
+    fi
 fi
 
 # Start bitbake environment
@@ -31,11 +33,15 @@ echo "Starting bitbake environment ..."
 export TEMPLATECONF=`pwd`/meta-ni-kula/conf/templates/default
 source ./openembedded-core/oe-init-build-env ./build ./bitbake
 
-# Give the bitbake sever a chance to start
-sleep 3
+if grep -qs "MACHINE =" ./conf/local.conf; then
+    echo "MACHINE already configured, skip generating a new machine configuration."
+else
+    # Give the bitbake sever a chance to start
+    sleep 3
 
-# Generate machine configuration from system device tree
-../gen-machine-conf/gen-machineconf parse-sdt --hw-description ./sdt -c ./conf -l ./conf/local.conf --machine-name versal-vck190-sdt-kula
+    # Generate machine configuration from system device tree
+    ../gen-machine-conf/gen-machineconf parse-sdt --hw-description ./sdt -c ./conf -l ./conf/local.conf --machine-name versal-vck190-sdt-kula
+fi
 
 # Print some help
 echo "Build images with:"
