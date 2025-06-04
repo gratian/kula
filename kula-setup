@@ -1,18 +1,19 @@
 #!/bin/bash
 
 usage() {
-    echo "Usage: $0 <xsa_file_path>"
-    exit 1
+    echo -e "Usage:\n\tsource kula-setup <xsa_file_path>"
 }
 
 if [ $# -eq 0 ]; then
     echo "Error: No file specified."
     usage
+    return
 fi
 
 if [ ! -f "$1" ]; then
     echo "error: file '$1' does not exist."
     usage
+    return
 fi
 
 # Add xsct to path (this is just a ease-of-use hack for prototyping)
